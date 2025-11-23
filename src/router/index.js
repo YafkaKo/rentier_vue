@@ -1,5 +1,6 @@
 import ChatsView from '@/pages/ChatsView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import AuthorizationView from '@/pages/AuthorizationView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,14 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       redirect: '/chats',
+    },
+    {
+      path: '/registration',
+      component: AuthorizationView
+    },
+    {
+      path: '/login',
+      component: AuthorizationView
     },
   ],
 })

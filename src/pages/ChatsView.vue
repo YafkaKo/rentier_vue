@@ -1,39 +1,47 @@
 <template>
-  <main class="chat-container">
-    <div class="top">
-      <h2 class="top-title">Курс по достижению финансовых целей</h2>
-      <p class="top-notice-messages">{{ totalUnreadCount }} новых сообщений</p>
-    </div>
-    <div class="bottom">
-      <ChatSidebar :chats="chats" :selected-chat-id="selectedChatId" @chat-select="selectChat" />
-      <transition-group name="fade-chat">
-        <ChatMain
-          ref="chatMainRef"
-          v-if="selectedChatId"
-          :chat="currentChat"
-          :selectedChatMessages="selectedChatMessages"
-          :selectedChatMessagesAfterClose="selectedChatMessagesAfterClose"
-          :role="role"
-          @send-message="handleSendMessage"
-          @send-message-after-close="handleSendMessageAfterClose"
+  <SidebarMain />
+  <div class="main-container">
+    <HeaderMain />
+    <main class="chat-container">
+      <div class="top">
+        <h2 class="top-title">Курс по достижению финансовых целей</h2>
+        <p class="top-notice-messages">{{ totalUnreadCount }} новых сообщений</p>
+      </div>
+      <div class="bottom">
+        <ChatSidebar :chats="chats" :selected-chat-id="selectedChatId" @chat-select="selectChat" />
+        <transition-group name="fade-chat">
+          <ChatMain
+            ref="chatMainRef"
+            v-if="selectedChatId"
+            :chat="currentChat"
+            :selectedChatMessages="selectedChatMessages"
+            :selectedChatMessagesAfterClose="selectedChatMessagesAfterClose"
+            :role="role"
+            @send-message="handleSendMessage"
+            @send-message-after-close="handleSendMessageAfterClose"
+            @toggle-end-chat="toggleEndChat"
+          />
+          <ChatEmptyState v-else />
+        </transition-group>
+      </div>
+      <Transition name="fade" mode="out-in">
+        <ModalEndChat
+          v-if="isModalEndChat"
           @toggle-end-chat="toggleEndChat"
+          @confirm-end-chat="confirmEndChat"
+          :chats="chats"
+          :selected-chat-id="selectedChatId"
         />
-        <ChatEmptyState v-else />
-      </transition-group>
-    </div>
-    <Transition name="fade" mode="out-in">
-      <ModalEndChat
-        v-if="isModalEndChat"
-        @toggle-end-chat="toggleEndChat"
-        @confirm-end-chat="confirmEndChat"
-        :chats="chats"
-        :selected-chat-id="selectedChatId"
-      />
-    </Transition>
-  </main>
+      </Transition>
+    </main>
+    <FooterMain />
+  </div>
 </template>
 
 <script setup>
+import FooterMain from '@/components/layout/FooterMain.vue'
+import HeaderMain from '@/components/layout/HeaderMain.vue'
+import SidebarMain from '@/components/layout/SidebarMain.vue'
 import { computed, nextTick, onMounted, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ModalEndChat from '@/components/ChatsView/ModalEndChat.vue'
@@ -124,6 +132,13 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.main-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
+  position: relative;
+}
 .chat-container {
   margin-top: 30px;
   border-radius: 15px;
